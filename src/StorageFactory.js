@@ -2,6 +2,8 @@
 import { TodoService } from './TodoService.js';
 import { LocalStorageHandler } from './LocalStorageHandler.js';
 import { InMemoryStorageHandler } from './InMemoryStorageHandler.js';
+import { StorageGroup } from './StorageGroup.js';
+import { ArchiveStorageHandler } from './ArchiveStorageHandler.js';
 
 // Creator: builds a TodoService on top of whatever createStorage() returns.
 export class StorageFactory {
@@ -19,4 +21,14 @@ export class LocalStorageFactory extends StorageFactory {
 
 export class InMemoryStorageFactory extends StorageFactory {
   createStorage() { return new InMemoryStorageHandler(); }
+}
+
+// Week 9: a Composite of two leaves, used as if it were one storage.
+export class ArchivingStorageFactory extends StorageFactory {
+  createStorage() {
+    const group = new StorageGroup();
+    group.add(new LocalStorageHandler());
+    group.add(new ArchiveStorageHandler());
+    return group;
+  }
 }

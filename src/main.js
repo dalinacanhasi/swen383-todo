@@ -1,16 +1,19 @@
 // src/main.js
 import { TodoRenderer } from './TodoRenderer.js';
 import { TodoController } from './TodoController.js';
-import { LocalStorageFactory } from './StorageFactory.js';
+import { ArchivingStorageFactory } from './StorageFactory.js';
 import { LoggingTodoServiceDecorator } from './LoggingTodoServiceDecorator.js';
+import { ConfirmDeleteProxy } from './ConfirmDeleteProxy.js';
 import { IdeaBox } from './IdeaBox.js';
 import { IdeaBoxAdapter } from './IdeaBoxAdapter.js';
 import { TaskCounter } from './TaskObservers.js';
 import { AddTaskCommand, CommandHistory } from './Commands.js';
 
-const factory     = new LocalStorageFactory();
+const factory     = new ArchivingStorageFactory();
 const todoService = factory.createService();                       // the real one: it has subscribe()
-const service     = new LoggingTodoServiceDecorator(todoService);  // what the rest of the app uses
+const service     = new ConfirmDeleteProxy(                        // what the rest of the app uses
+  new LoggingTodoServiceDecorator(todoService)
+);
 const renderer    = new TodoRenderer('task-container');
 const controller  = new TodoController(service, renderer);
 controller.start();
