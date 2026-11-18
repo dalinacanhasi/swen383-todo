@@ -24,4 +24,10 @@ export class TodoController {
     }
     return newId;
   }
+
+  // Week 11: the Receiver role for AddTaskCommand.undo()
+  removeTask(id) {
+    this.todoService.deleteTask(id);
+    this.todoRenderer.render(this.todoService);
+  }
 }

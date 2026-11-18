@@ -6,6 +6,18 @@ export class TodoService {
   constructor(storage) {
     this.storage = storage;
     this.tasks = this.storage.load();
+    this.observers = [];                 // Week 11: Observer
+  }
+
+  // --- Week 11: Subject role ---
+  subscribe(observer) {
+    this.observers.push(observer);
+  }
+
+  notify() {
+    for (const observer of this.observers) {
+      observer.update(this.tasks);
+    }
   }
 
   addTask(description) {
@@ -40,6 +52,7 @@ export class TodoService {
   store(task) {
     this.tasks.push(task);
     this.storage.save(this.tasks);
+    this.notify();                       // Week 11
     return task.id;
   }
 
@@ -48,11 +61,13 @@ export class TodoService {
     if (!task) return;
     task.completed = !task.completed;
     this.storage.save(this.tasks);
+    this.notify();                       // Week 11
   }
 
   deleteTask(id) {
     this.tasks = this.tasks.filter(t => t.id !== id);
     this.storage.save(this.tasks);
+    this.notify();                       // Week 11
   }
 
   getWorkloadSummary() {
