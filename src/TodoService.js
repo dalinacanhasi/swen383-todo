@@ -1,6 +1,7 @@
 // src/TodoService.js
 // Owns the tasks. Knows nothing about the page and nothing about localStorage.
 import { TaskBuilder } from './TaskBuilder.js';
+import { stateOf } from './TaskState.js';   // Week 12: State
 
 export class TodoService {
   constructor(storage) {
@@ -51,6 +52,7 @@ export class TodoService {
 
   store(task) {
     this.tasks.push(task);
+    this.applySort();                    // Week 12: keep the chosen order
     this.storage.save(this.tasks);
     this.notify();                       // Week 11
     return task.id;
@@ -59,7 +61,7 @@ export class TodoService {
   toggleComplete(id) {
     const task = this.tasks.find(t => t.id === id);
     if (!task) return;
-    task.completed = !task.completed;
+    stateOf(task).next(task);            // Week 12: the state decides what comes next
     this.storage.save(this.tasks);
     this.notify();                       // Week 11
   }
@@ -68,6 +70,19 @@ export class TodoService {
     this.tasks = this.tasks.filter(t => t.id !== id);
     this.storage.save(this.tasks);
     this.notify();                       // Week 11
+  }
+
+  // --- Week 12: Strategy role (Context) ---
+  setSortStrategy(strategy) {
+    this.sortStrategy = strategy;
+    this.applySort();
+    this.notify();
+  }
+
+  applySort() {
+    if (this.sortStrategy) {
+      this.sortStrategy.sort(this.tasks);
+    }
   }
 
   getWorkloadSummary() {

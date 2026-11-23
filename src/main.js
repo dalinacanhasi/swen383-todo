@@ -8,6 +8,7 @@ import { IdeaBox } from './IdeaBox.js';
 import { IdeaBoxAdapter } from './IdeaBoxAdapter.js';
 import { TaskCounter } from './TaskObservers.js';
 import { AddTaskCommand, CommandHistory } from './Commands.js';
+import { SortByName, SortByNewest } from './SortStrategy.js';
 
 const factory     = new ArchivingStorageFactory();
 const todoService = factory.createService();                       // the real one: it has subscribe()
@@ -53,3 +54,14 @@ suggestBtn.addEventListener('click', () => {
 const counter = new TaskCounter();
 todoService.subscribe(counter);
 counter.update(todoService.tasks);   // show the count at the start
+
+// --- Week 12: Strategy, chosen by the user ---
+document.getElementById('sort-name-btn').addEventListener('click', () => {
+  todoService.setSortStrategy(new SortByName());
+  controller.start();               // draw the list again
+});
+
+document.getElementById('sort-newest-btn').addEventListener('click', () => {
+  todoService.setSortStrategy(new SortByNewest());
+  controller.start();
+});
